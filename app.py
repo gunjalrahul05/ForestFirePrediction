@@ -3,11 +3,9 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from PIL import Image
 
-# Load the saved Keras model
 model_path = "wildfire_model.keras"
 model = load_model(model_path)
 
-# Preprocess image function
 def preprocess_image_pil(image):
     img = image.convert("RGB")
     img = img.resize((32, 32))
@@ -15,23 +13,21 @@ def preprocess_image_pil(image):
     img = np.expand_dims(img, axis=0)
     return img
 
-# Predict function
 def predict_image_pil(image):
     img = preprocess_image_pil(image)
     pred = model.predict(img)
-    print("Raw prediction:", pred)  # Debug print
+    print("Raw prediction:", pred)  
     
-    # Check prediction shape
-    if pred.shape[-1] == 1:  # Binary classification
+    if pred.shape[-1] == 1:  
         score = pred[0][0]
-        print(f"Prediction score: {score}")  # Debug print
+        print(f"Prediction score: {score}")  
         if score > 0.5:
             return f"Wildfire 🔥 (confidence: {score:.2%})"
         else:
             return f"No Wildfire ✅ (confidence: {(1-score):.2%})"
-    else:  # Multi-class classification
+    else:  
         class_probs = pred[0]
-        print(f"Class probabilities: {class_probs}")  # Debug print
+        print(f"Class probabilities: {class_probs}")  
         class_idx = np.argmax(class_probs)
         confidence = class_probs[class_idx]
         if class_idx == 1:
@@ -42,7 +38,6 @@ def predict_image_pil(image):
 st.title("Forest Fire Prediction")
 st.write("Upload an image to predict if it shows a wildfire.")
 
-# Use session state to manage file uploader reset
 if "reset_uploader" not in st.session_state:
     st.session_state.reset_uploader = False
 
